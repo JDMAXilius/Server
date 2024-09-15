@@ -18,7 +18,7 @@ void UServerMainMenu::NativeConstruct()
 	Super::NativeConstruct();
 
 	PathToLevel = FString::Printf(TEXT("%s?listen"), *PathToLevel);
-	bIsFocusable = true;
+	SetIsFocusable(true);
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -98,8 +98,8 @@ void UServerMainMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& S
 {
 	if (bWasSuccessful && ServerListView)
 	{
-		//ServerSessionsSubsystem->JoinSession(SessionResults[0]);
-		UpdateServerList(SessionResults);
+		ServerSessionsSubsystem->JoinSession(SessionResults[0]);
+		//UpdateServerList(SessionResults);
 	}
 	if (!bWasSuccessful || SessionResults.Num() == 0)
 	{
@@ -156,15 +156,12 @@ void UServerMainMenu::UpdateServerList(const TArray<FOnlineSessionSearchResult>&
 				ServerRow->SetServerData(SearchResult);
 				CurentIndex = CurentIndex + ServerRow->SelectedIndex + 1;
 				ServerRow->SelectedIndex = CurentIndex;
-				//ServerRow->OnServerRowClicked.AddDynamic(this, &ThisClass::OnServerRowSelected);//
-				if (ServerRow && ServerRow->ServerRowButton)
-				{
-					ServerRow->ServerRowButton->OnClicked.AddDynamic(this, &UServerMainMenu::JoinButtonClicked);
-				}
+				ServerRow->ServerRowButton->OnClicked.AddDynamic(this, &UServerMainMenu::OnRowClicked);
+				//ServerRow->ServerRowButton->OnClicked.AddDynamic(this, &UServerMainMenu::JoinButtonClicked);
 				// Add the row to the list and map
 				ServerListView->AddItem(ServerRow);
 				ServerRowMap.Add(ServerRow, SearchResult);
-				SelectedServerRow.Add(ServerRow);
+				SelectedServerRows.Add(ServerRow);
 			}
 		}
 	}
@@ -172,7 +169,7 @@ void UServerMainMenu::UpdateServerList(const TArray<FOnlineSessionSearchResult>&
 void UServerMainMenu::JoinButtonClicked()
 {
 	
-	for (const auto& SelectedSRow : SelectedServerRow)
+	for (const auto& SelectedSRow : SelectedServerRows)
 	{
 		if (ServerRowMap.Contains(SelectedSRow) && ServerSessionsSubsystem)
 		{
@@ -187,29 +184,16 @@ void UServerMainMenu::JoinButtonClicked()
 		}
 	}
 }
-void UServerMainMenu::SelectedJoinButtonClicked()
+void UServerMainMenu::OnRowClicked()
 {
-	for (const auto& SelectedSRow : SelectedServerRow)
+	// Handle row selection
+	if (UServerRowServers* ClickedRow = Cast<UServerRowServers>(ServerListView->GetSelectedItem()))
 	{
-		if (ServerRowMap.Contains(SelectedSRow) && ServerSessionsSubsystem)
+		if (ServerRowMap.Contains(ClickedRow))
 		{
-			// Get the selected session data and attempt to join
-			const FOnlineSessionSearchResult& SelectedSession = ServerRowMap[SelectedSRow];
+			const FOnlineSessionSearchResult& SelectedSession = ServerRowMap[ClickedRow];
 			ServerSessionsSubsystem->JoinSession(SelectedSession);
 		}
-		else
-		{
-			// No row selected, or session not valid
-			JoinButton->SetIsEnabled(true);
-		}
-	}
-}
-void UServerMainMenu::OnServerRowSelected(UServerRowServers* ClickedRow)
-{
-	if (ClickedRow && ServerRowMap.Contains(ClickedRow))
-	{
-		// Set the selected row
-		//SelectedServerRow = ClickedRow;
 	}
 }
 void UServerMainMenu::HostButtonClicked()

@@ -13,7 +13,7 @@ class UButton;
 class UCheckBox;
 class UListView;
 class UServerSessionsSubsystem;
-//struct FOnlineSessionSearchResult;
+
 
 UCLASS()
 class SERVER_API UServerMainMenu : public UUserWidget
@@ -23,16 +23,16 @@ class SERVER_API UServerMainMenu : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Server Menu", meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Server Menu", meta = (BindWidget))
 	UButton* HostButton;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Server Menu", meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Server Menu", meta = (BindWidget))
 	UButton* FindButton;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Server Menu", meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Server Menu", meta = (BindWidget))
 	UButton* JoinButton;
 	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Server Menu", meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Server Menu", meta = (BindWidget))
 	UButton* QuitButton;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Server Menu", meta = (BindWidget))
@@ -40,13 +40,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Server Menu", meta = (BindWidget))
 	UListView* ServerListView;
-	int32 CurentIndex;
+
 protected:
-	// Map to store server rows and their corresponding session data
-	TMap<UServerRowServers*, FOnlineSessionSearchResult> ServerRowMap;
-	// Selected server row
-	TArray<UServerRowServers*> SelectedServerRow;
-	
 	UFUNCTION()
 	void OnCreateSession(bool bWasSuccessful);
 	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
@@ -57,9 +52,9 @@ protected:
 	UFUNCTION()
 	void OnStartSession(bool bWasSuccessful);
 	void UpdateServerList(const TArray<FOnlineSessionSearchResult>& SearchResults);
-	void OnServerRowSelected(UServerRowServers* ClickedRow);
+	UFUNCTION()
 	void OnRowClicked();
-
+	
 private:
 	
 	UFUNCTION()
@@ -70,8 +65,6 @@ private:
 	
 	UFUNCTION()
 	void JoinButtonClicked();
-	UFUNCTION()
-	void SelectedJoinButtonClicked();
 
 	UFUNCTION()
 	void QuitButtonClicked();
@@ -79,7 +72,16 @@ private:
 	void MenuTearDown();
 
 	// The subsystem designed to handle all online session functionality
+	UPROPERTY()
 	UServerSessionsSubsystem* ServerSessionsSubsystem;
+
+	UPROPERTY()
+	UServerRowServers* SelectedServerRow;
+	UPROPERTY()
+	TArray<UServerRowServers*> SelectedServerRows; 
+	// Map to store server rows and their corresponding session data
+	TMap<UServerRowServers*, FOnlineSessionSearchResult> ServerRowMap;
+	int32 CurentIndex;
 	
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category = "Server Menu",  meta = (AllowPrivateAccess = "true"))
 	int32 NumPublicConnections{4};
