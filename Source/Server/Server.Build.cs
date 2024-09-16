@@ -8,6 +8,6 @@ public class Server : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core","UMG", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "OnlineSubsystem", "OnlineSubsystemSteam", "OnlineSubsystemUtils"/*, "OnlineSubsystemEOS" , "OnlineSubsystem", "OnlineSubsystemUtils", "OnlineSubsystemBlueprints","Networking", "GameplayTasks", "PlayFab", "PlayFabCommon", "PlayFabCpp"*/ });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core","UMG", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "OnlineSubsystem",/* "OnlineSubsystemSteam",*/ "OnlineSubsystemUtils"/*, "OnlineSubsystemEOS" , "OnlineSubsystem", "OnlineSubsystemUtils", "OnlineSubsystemBlueprints","Networking", "GameplayTasks", "PlayFab", "PlayFabCommon", "PlayFabCpp"*/ });
 	}
 }
